@@ -1,6 +1,6 @@
 # SHECAST · Summer Extreme (Nonlinear / CatBoost)
 
-**SHECAST** (*SJU Hybrid Extreme foreCast*) is a statistical–dynamical seasonal-prediction framework for Korean climate extremes. **This repository is the nonlinear (CatBoost) model for summer extremes.**
+**SHECAST** (*Statistical Hybrid Ensemble foreCast*) is a hybrid statistical–dynamical seasonal-forecast system that targets **climate variables of low direct dynamical predictability** (air quality, blocking, warm/cold extremes), bridging them to a **multi-model ensemble**'s skilfully-forecast large-scale fields. **This repository is the nonlinear (CatBoost) core for Korean summer extremes.**
 
 Machine-learning (gradient-boosted decision trees, **CatBoost**) seasonal prediction of **Korean summer compound hot–dry extremes (CDHD)** over the July–August (JA) season.
 
