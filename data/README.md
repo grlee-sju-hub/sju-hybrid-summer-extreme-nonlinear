@@ -13,14 +13,13 @@ Place the required inputs in this directory (or edit the path at the top of each
 
 CDHD = `( log1p(HWD) / σ ) × ( −SPEI3 )` — see **How CDHD is computed** in the main README. Only the finished CDHD series is needed to run the model; the heatwave-day and SPEI inputs used to *derive* it are project-internal.
 
-### ERA5 monthly fields — selected predictors (track A)
+### Observed predictors — precomputed track-A indices
 
-| field | role |
-|---|---|
-| **JA T2M** | tropical North-Atlantic driver (L0, concurrent) |
-| **JA V10** | eastern Indian-Ocean driver (L0, concurrent) |
+| file | description | source |
+|---|---|---|
+| `era5_JA_trackA_predictors_1979-2024.csv` | JA box-mean indices `t2mna` (2-m temp, tropical N. Atlantic) and `v10io` (10-m meridional wind, E. Indian Ocean) | derived from ERA5 monthly T2M / V10 |
 
-Source: ERA5 — Copernicus Climate Data Store (CDS).
+Source fields: ERA5 — Copernicus Climate Data Store (CDS).
 
 ### C3S multi-model-ensemble forecast — concurrent (L0) predictors
 

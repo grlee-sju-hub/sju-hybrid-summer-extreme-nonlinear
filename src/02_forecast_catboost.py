@@ -5,28 +5,17 @@ from pathlib import Path
 from catboost import CatBoostRegressor
 import matplotlib; matplotlib.use("Agg"); matplotlib.rcParams["font.family"]="Nimbus Sans"; matplotlib.rcParams["font.size"]=12; matplotlib.rcParams["mathtext.fontset"]="stixsans"
 import matplotlib.pyplot as plt
-D=Path("data"); EM=D/"ERA5/monthly"; V10=Path("/data1/ERA5/single_level/monthly_1.0/10m_v_component_of_wind"); FIG=Path("figure")
+D=Path("data"); FIG=Path("figure")
 COL=["#36b5ff","#d9d9d9","#ff5a4e"]; EV=[int(y) for y in range(1993,2017)]; Y46=np.arange(1979,2025); pos={int(Y):k for k,Y in enumerate(Y46)}; PREDN=["t2mna","v10io"]
 CB=dict(iterations=200,depth=2,learning_rate=0.05,l2_leaf_reg=5.0,loss_function="RMSE",random_seed=42,verbose=0,allow_writing_files=False)
 def detr(x): x=np.asarray(x,float); n=len(x); t=np.arange(n)-(n-1)/2.; a=x-x.mean(); s=(t*t).sum(); return a-((t*a).sum()/s)*t
-def box_ja(kind,a,b,c,e):
-    out=[]
-    for y in Y46:
-        vv=[]
-        for mm in (7,8):
-            if kind=="t2m": ds=xr.open_dataset(EM/f"ERA5m_{y}{mm:02d}.nc"); da=ds["t2m"]
-            else: ds=xr.open_dataset(V10/f"ERA5m_{y}{mm:02d}.nc"); da=ds["v10"].squeeze()
-            lat=da["latitude"].values; lon=da["longitude"].values; ml=(lat>=a)&(lat<=b); mo=(lon>=c)&(lon<=e)
-            s=(da.values if da.values.ndim==2 else da.values[0])[np.ix_(ml,mo)]; w=np.cos(np.deg2rad(lat[ml]))[:,None]
-            vv.append(float(np.nansum(s*w)/np.nansum(w*np.ones_like(s)))); ds.close()
-        out.append(np.mean(vv))
-    return np.array(out)
+# track-A predictor indices (t2mna, v10io) are read from a precomputed csv below
 d=xr.open_dataset(D/"ERA5_JA_CDHD_index_1979-2024.nc"); yc=d.year.values.astype(int); cdhd=np.array([float(d.korea_nday.values[list(yc).index(y)]) for y in Y46]); d.close()
 ym={int(Y):float(cdhd[k]) for k,Y in enumerate(Y46)}
-PRED={"t2mna":box_ja("t2m",8.5,20.5,306.5,325.5),"v10io":box_ja("v10",5.5,12.5,87.5,92.5)}
+_ta=pd.read_csv(D/"era5_JA_trackA_predictors_1979-2024.csv").set_index("year"); PRED={p:_ta.reindex(Y46)[p].values for p in PREDN}
 yt=detr(np.array([ym[Y] for Y in Y46])); Xf={p:detr(PRED[p]) for p in PRED}
 OM={p:np.array([Xf[p][pos[Y]] for Y in EV]).mean() for p in PREDN}; OSD={p:np.array([Xf[p][pos[Y]] for Y in EV]).std() for p in PREDN}
-pm=pd.read_csv(D/"c3s_cdhd_permember_predictors_1993-2016.csv"); models=sorted(pm.model.unique())
+pm=pd.read_csv(D/"c3s_ensemble_L0_ja.csv"); models=sorted(pm.model.unique())
 MOD={}
 for Y in EV:
     tr=Y46!=Y; Xtr=np.column_stack([Xf[p][tr] for p in PREDN]); m=CatBoostRegressor(**CB); m.fit(Xtr,yt[tr]); MOD[Y]=m
