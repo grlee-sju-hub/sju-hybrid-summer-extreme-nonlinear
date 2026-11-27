@@ -1,4 +1,6 @@
-# SJU-Hybrid · Summer Extreme (Nonlinear / CatBoost)
+# SHECAST · Summer Extreme (Nonlinear / CatBoost)
+
+**SHECAST** (*SJU Hybrid Extreme foreCast*) is a statistical–dynamical seasonal-prediction framework for Korean climate extremes. **This repository is the nonlinear (CatBoost) model for summer extremes.**
 
 Machine-learning (gradient-boosted decision trees, **CatBoost**) seasonal prediction of **Korean summer compound hot–dry extremes (CDHD)** over the July–August (JA) season.
 
@@ -16,7 +18,7 @@ This repository contains the **nonlinear (CatBoost) counterpart** of the statist
 
 ![Predictor pool construction and final selection](docs/pipeline.png)
 
-Predictors are built in **two stages** — an automated, physically-constrained *candidate-pool construction* (identical across all four SJU-Hybrid models) followed by a *final selection* that keeps only the few predictors maximising out-of-sample skill.
+Predictors are built in **two stages** — an automated, physically-constrained *candidate-pool construction* (identical across all four SHECAST models) followed by a *final selection* that keeps only the few predictors maximising out-of-sample skill.
 
 **Stage 1 — candidate pool.** The detrended predictand index is correlated against global ERA5 climate fields (T2m, MSL, SST, Z500, U200, V200, T850, Z850, precipitation, …) at lead times of 0–3 months, and the C3S multi-model-ensemble (MME) forecast skill is mapped for each field in parallel. A grid cell becomes a predictor source only where it is physically *and* operationally useful, through a **dual-condition significance mask**:
 
