@@ -10,9 +10,21 @@ This repository contains the **nonlinear (CatBoost) counterpart** of the statist
 
 - **Predictand:** JA compound hot–dry index **CDHD** over Korea,
   `CDHD = ( log1p(HWD) / σ ) × ( − SPEI3 )` (heatwave intensity × drought).
-- **Predictors:** identical physically-motivated, skill-screened teleconnection pool as the linear model (see the sibling `…-linear` repository).
+- **Predictors:** the same two concurrent (L0, July–August) large-scale drivers as the linear model (**track A**): tropical North-Atlantic 2-m temperature and eastern Indian-Ocean 10-m meridional wind.
 - **Estimator:** **CatBoost** (symmetric gradient-boosted trees), chosen for small-sample robustness over XGBoost/LightGBM.
 - **Output:** per-ensemble-member forecast aggregated to tercile-category probabilities.
+
+## How CDHD is computed
+
+**CDHD** (compound hot–dry) merges summer heat and drought into a single index:
+
+```
+CDHD = ( log1p(HWD) / σ_logHWD ) × ( −SPEI3 )
+```
+
+- **HWD — heatwave-day count.** From ERA5 daily maximum temperature: at each grid cell the day-of-year 90th percentile is taken over the 1981–2010 base period with a ±7-day window, and a heatwave day is tmax exceeding that threshold on ≥3 consecutive days. HWD is the July–August count, cos-latitude-weighted over the Korea box (32.5–45°N, 122.5–132.5°E). `log1p(HWD)` compresses the right-skewed count and is divided by its 1979–2024 standard deviation (`σ_logHWD`).
+- **SPEI3 — drought.** The 3-month Standardized Precipitation–Evapotranspiration Index for July–August over Korea (SPEIbase v2.11), normalized over 1979–2024. SPEI3 < 0 under drought, so **−SPEI3** is the drought magnitude.
+- **Product.** Standardized heat × drought makes CDHD large only when a summer is **both hot and dry** — a hot-but-wet or cool-but-dry summer scores low. CDHD is defined on the Korea-mean series (one value per year, 1979–2024) and is distributed as the predictand file `ERA5_JA_CDHD_index_1979-2024.nc` (variable `korea_nday`).
 
 ## How the predictors are built
 
@@ -39,13 +51,12 @@ The relationship sign (±) is preserved. The mask is segmented into coherent reg
 
 ## Selected predictors (CDHD)
 
-CatBoost is a nonlinear tree estimator, so there is no single regression coefficient. Leads are months before the July–August target (L1 = June, L3 = April).
+The CDHD model (**track A**) uses two **concurrent (L0, July–August) large-scale drivers** forecast by the dynamical multi-model ensemble. CatBoost is a nonlinear tree estimator, so there is no single regression coefficient.
 
 | predictor | lead | variable | region |
 |---|---|---|---|
-| α | L1 (Jun) | precipitation | Korea / East Sea (≈37°N, 132°E) |
-| β | L1 (Jun) | 2-m temperature | subtropical NE Atlantic (≈31°N, 18°W) |
-| γ | L3 (Apr) | precipitation | Arctic / Beaufort Sea (≈72°N, 131°W) |
+| α | L0 (JA) | 2-m temperature | tropical North Atlantic (≈14.5°N, 44°W) |
+| β | L0 (JA) | 10-m meridional wind | eastern Indian Ocean / Bay of Bengal (≈9°N, 90°E) |
 
 ## Repository structure
 

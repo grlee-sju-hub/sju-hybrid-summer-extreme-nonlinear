@@ -21,10 +21,8 @@ def box_ja(kind,a,b,c,e):
             vv.append(float(np.nansum(s*w)/np.nansum(w*np.ones_like(s)))); ds.close()
         out.append(np.mean(vv))
     return np.array(out)
-d=xr.open_dataset(D/"ERA5_JA_HW_index_1979-2024.nc"); yh=d.year.values.astype(int); hwd=np.array([float(d.korea_nday.values[list(yh).index(y)]) for y in Y46]); d.close()
-sp=pd.read_csv(D/"SPEI"/"SPEIbase_v2.11_spei3_korea_JA_1901-2024.csv"); sp=sp[(sp.year>=1979)&(sp.year<=2024)]
-spei3=np.array([float(sp[sp.year==y].spei3_JA.values[0]) for y in Y46]); spn=(spei3-spei3.mean())/spei3.std(ddof=1)
-cdhd=(np.log1p(hwd)/np.std(np.log1p(hwd),ddof=1))*(-spn); ym={int(Y):float(cdhd[k]) for k,Y in enumerate(Y46)}
+d=xr.open_dataset(D/"ERA5_JA_CDHD_index_1979-2024.nc"); yc=d.year.values.astype(int); cdhd=np.array([float(d.korea_nday.values[list(yc).index(y)]) for y in Y46]); d.close()
+ym={int(Y):float(cdhd[k]) for k,Y in enumerate(Y46)}
 PRED={"t2mna":box_ja("t2m",8.5,20.5,306.5,325.5),"v10io":box_ja("v10",5.5,12.5,87.5,92.5)}
 yt=detr(np.array([ym[Y] for Y in Y46])); Xf={p:detr(PRED[p]) for p in PRED}
 OM={p:np.array([Xf[p][pos[Y]] for Y in EV]).mean() for p in PREDN}; OSD={p:np.array([Xf[p][pos[Y]] for Y in EV]).std() for p in PREDN}
