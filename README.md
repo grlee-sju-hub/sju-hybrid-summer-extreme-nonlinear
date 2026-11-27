@@ -37,7 +37,13 @@ The relationship sign (±) is preserved. The mask is segmented into coherent reg
 
 ## Selected predictors (CDHD)
 
-- June precipitation over the Korean Peninsula (L1) · June 2-m temperature over the North Atlantic (L1) · April precipitation over the Arctic (L3)
+CatBoost is a nonlinear tree estimator, so there is no single regression coefficient. Leads are months before the July–August target (L1 = June, L3 = April).
+
+| predictor | lead | variable | region |
+|---|---|---|---|
+| α | L1 (Jun) | precipitation | Korea / East Sea (≈37°N, 132°E) |
+| β | L1 (Jun) | 2-m temperature | subtropical NE Atlantic (≈31°N, 18°W) |
+| γ | L3 (Apr) | precipitation | Arctic / Beaufort Sea (≈72°N, 131°W) |
 
 ## Repository structure
 
